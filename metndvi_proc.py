@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-A script that attributes a 2016 CSS file with met office data 
-and S2 derived NDVI. This must be pointed at the 
+A script that attributes a 2016 CSS file with met office data.
 
 @author: Ciaran Robb
 """
@@ -82,44 +81,7 @@ for idx, yr in enumerate(finalproc):
         met_time_series(d, inShp, inShp, p) 
         
   
-# Now for the Sentinel 2 data. Rather difficult to eliminate cloud without also
-# elimating half the data. This is the TOA data as the SR is only available '17
-# onwards 
-# list of start and end dates
 
-# Due to how I implemented the agg of data has to be done per year
-# TODO  change this!!
-dates = [('2016-01-01','2016-12-31'), ('2017-01-01','2017-12-31'), 
-         ('2018-01-01','2018-12-31'), ('2019-01-01','2019-12-31'), 
-         ('2020-01-01','2020-12-31')]
-        
-gdf = gpd.read_file(inShp)
-# get the coords
-lons, lats = eot.points_to_pixel(gdf, espgin='epsg:27700', espgout='epsg:4326')
-del gdf
-
-# Tis a question as to whether mean, max, or upper 95th perc is the best monthly
-# agg to go with? 95th perc is used here in case of spurious NDVI vals
-# The below DOES NOT mask clouds via percentage or bit mask (but could), but 
-# this always eliminates potentially useful data. 
-# You will have to decide afterwards which vals look plausible in the time series
-# It may be possible to smooth it to get a 'better curve'. 
-
-# See the README.rst for an explanation of why client parallelism is used here
-# Updates/improvements welcome....
-for d in dates:
-    _ = eot.S2_ts(inShp, collection="COPERNICUS/S2", start_date=d[0],
-      end_date=d[1], dist=10, cloud_mask=False, stat='perc', 
-      cloud_perc=100, para=True, outfile=inShp)
-    
-# Now for a ratio of polarisation from the Sentinel 1 GRD data. 
-# This will be labelled VVVH in the attributes
-for d in dates:
-    print(d)
-    _ = eot.S1_ts(inShp, start_date=d[0],
-               end_date=d[1], dist=20,  polar='VV',
-               orbit='ASCENDING', stat='mean', outfile=inShp, month=True,
-               para=True)
         
         
 
