@@ -19,11 +19,9 @@ dependencies:
   - shapely
   - joblib
   - tqdm
-  - earthengine-api
   - glob2
   - xarray
 
   - pip:
     - ContrailOnlineCAClient
-    - geemap
     - ftplib
